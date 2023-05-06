@@ -7,6 +7,8 @@ from django.views.generic import (
 	DetailView, 
 	DeleteView
 	)
+from rest_framework import viewsets
+from .serializers import ModelSerializer
 from .models import Post
 
 
@@ -28,7 +30,7 @@ class PostDetailView(DetailView):
 
 class PostCreateView(LoginRequiredMixin, CreateView):
 	model = Post
-	fields = ['title', 'content']
+	fields = ['title', 'points']
 
 	def form_valid(self, form):
 		form.instance.author = self.request.user
@@ -43,6 +45,10 @@ class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 		if self.request.user == post.author:
 			return True
 		return False
+
+class PostView(viewsets.ModelViewSet):
+	serializer_class = ModelSerializer
+	queryset = Post.objects.all()
 
 def about(request):
 	return render(request, 'blog/about.html', {'title': 'About'})
